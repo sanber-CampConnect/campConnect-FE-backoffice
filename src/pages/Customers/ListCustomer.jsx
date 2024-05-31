@@ -32,16 +32,6 @@ const columns = [
             icon={<EyeFilled className="text-gray-600 hover:text-primary" />}
             // onClick={() => viewData(record)}
           />
-          <BButton
-            className="py-1 rounded-lg"
-            icon={<EditFilled className="text-gray-600 hover:text-primary" />}
-            // onClick={() => editData(record)}
-          />
-          <BButton
-            className="py-1 rounded-lg"
-            icon={<DeleteFilled className="text-gray-600 hover:text-primary" />}
-            // onClick={() => deleteData(record.user_code)}
-          />
         </div>
       </>
     ),
@@ -51,8 +41,8 @@ const columns = [
 const data = [
   {
     key: "1",
-    product_name: "Tenda",
-    price: "",
+    name: "John Brown",
+    email: "abc@gmail.com",
     handphone: "+6281234567890",
   },
   {

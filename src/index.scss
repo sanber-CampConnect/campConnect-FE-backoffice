@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+@import "./assets//styles/_customUI.scss";
+
+* {
+  font-family: "Inter", sans-serif;
+}
+
+.bg-custom {
+  background: #e6edeb;
+}
+
+h1 {
+  @apply text-xl;
+  font-weight: 600;
+}
+h2 {
+  @apply text-lg;
+}
+h3 {
+  font-size: 18px;
+}
+h4 {
+  font-size: 16px;
+}
+p {
+  font-size: 14px;
+}

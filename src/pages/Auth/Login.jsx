@@ -73,6 +73,34 @@ export default function Login() {
               </Button>
             </Form.Item>
           </Form> */}
+          <form className="space-y-4">
+          <div>
+            <label htmlFor="email" className="block mb-1">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              className="w-full border border-gray-300 rounded-md px-3 py-2"
+              placeholder="Masukkan email Anda"
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="block mb-1">Kata Sandi</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              className="w-full border border-gray-300 rounded-md px-3 py-2"
+              placeholder="Masukkan kata sandi Anda"
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-primary text-white py-2 rounded-md hover:bg-primary-dark transition-colors duration-300"
+          >
+            Masuk
+          </button>
+        </form>
           <p className="cursor-pointer text-primary">Lupa Kata Sandi?</p>
         </div>
       </div>

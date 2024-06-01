@@ -1,16 +1,18 @@
 import React from "react";
-import { Table, Tag } from "antd";
+import { Table } from "antd";
 
 const columns = [
   {
     title: "Name",
     dataIndex: "name",
     key: "name",
+    sorter: (a, b) => a.email.localeCompare(b.email),
   },
   {
     title: "Email",
     dataIndex: "email",
     key: "email",
+    sorter: (a, b) => a.email.localeCompare(b.email),
   },
   {
     title: "Handphone",
@@ -101,16 +103,7 @@ export default function ListAdmin() {
         <h1>List Admin</h1>
       </div>
       <div className="bg-white p-3 shadow-md rounded-md">
-        <Table
-          columns={columns}
-          dataSource={data}
-          pagination={{
-            defaultPageSize: 5,
-            defaultCurrent: 1,
-            total: 100,
-            position: ["bottomCenter"],
-          }}
-        />
+        <Table columns={columns} dataSource={data} pagination={true} />
       </div>
     </>
   );

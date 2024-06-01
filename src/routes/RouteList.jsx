@@ -7,10 +7,15 @@ const Page404 = React.lazy(() => import("../components/organism/Page404"));
 const CustomerList = React.lazy(() =>
   import("../pages/Customers/ListCustomer")
 );
-const OrderList = React.lazy(() => import("../pages/Orders/ListOrder"));
+const OrderList = React.lazy(() =>
+  import("../pages/Orders/ListOrder/ListOrder")
+);
 const ProductList = React.lazy(() => import("../pages/Product/ListProducts"));
 const Login = React.lazy(() => import("../pages/Auth/Login"));
 const AdminList = React.lazy(() => import("../pages/Admin/ListAdmin"));
+const OrderRating = React.lazy(() =>
+  import("../pages/Orders/OrderRating/OrderRating")
+);
 
 export const routeList = [
   {
@@ -37,6 +42,12 @@ export const routeList = [
         title: "List Order",
         element: <Suspense fallback="loading...." children={<OrderList />} />,
       },
+      {
+        path: "rating",
+        index: true,
+        title: "Order Rating",
+        element: <Suspense fallback="loading...." children={<OrderRating />} />,
+      },
     ],
   },
   {
@@ -56,7 +67,7 @@ export const routeList = [
   },
   {
     path: "/admin",
-    title: "Admins",
+    title: "Admin",
     element: <DashboardLayout />,
     icon: <i className="bi bi-person-badge-fill"></i>,
     children: [

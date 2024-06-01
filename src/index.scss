@@ -15,7 +15,6 @@
 
 h1 {
   @apply text-xl;
-  font-weight: 600;
 }
 h2 {
   @apply text-lg;
@@ -28,4 +27,69 @@ h4 {
 }
 p {
   font-size: 14px;
+}
+
+.content-section {
+  .header {
+    @apply flex justify-between items-center mb-7;
+    h2 {
+      @apply text-xl text-baseColor mb-0;
+      font-weight: 600;
+    }
+    &-title {
+      @apply text-baseColor text-lg;
+      font-weight: 600;
+    }
+  }
+  .body {
+    @apply bg-white shadow-md rounded-md w-full p-8;
+  }
+  .body-with-footer {
+    @apply bg-white shadow-md rounded-md w-full;
+    .body-content {
+      @apply p-8;
+    }
+    .footer {
+      @apply px-8 pt-4 pb-4 flex justify-end gap-x-3 border-t-2;
+    }
+  }
+}
+
+.custom-tag {
+  margin-right: 8px;
+  padding: 1px 10px;
+  font-size: 12px;
+  line-height: 20px;
+  white-space: nowrap;
+  border-radius: 15px;
+  opacity: 1;
+  transition: all 0.3s;
+  &-blue {
+    color: #0284c7;
+    background: #e0f2fe;
+  }
+  &-green {
+    color: #166534;
+    background: #dcfce7;
+  }
+  &-orange {
+    color: #9a3412;
+    background: #ffedd5;
+  }
+  &-red {
+    color: #991b1b;
+    background: #fee2e2;
+  }
+  &-purple {
+    color: #6b21a8;
+    background: #f3e8ff;
+  }
+  &-yellow {
+    color: #854d0e;
+    background: #fef9c3;
+  }
+  &-default {
+    color: #1f2937;
+    background: #e5e7eb;
+  }
 }

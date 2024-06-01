@@ -1,18 +1,20 @@
 import React from "react";
 import { Table } from "antd";
 import { BButton } from "../../components/atoms/index";
-import { EyeFilled, EditFilled, DeleteFilled } from "@ant-design/icons";
+import { EyeFilled } from "@ant-design/icons";
 
 const columns = [
   {
     title: "Name",
     dataIndex: "name",
     key: "name",
+    sorter: (a, b) => a.name.localeCompare(b.name),
   },
   {
     title: "Email",
     dataIndex: "email",
     key: "email",
+    sorter: (a, b) => a.email.localeCompare(b.email),
   },
   {
     title: "Handphone",
@@ -28,7 +30,7 @@ const columns = [
       <>
         <div className="flex items-center gap-x-1">
           <BButton
-            className="py-1 rounded-lg"
+            className="py-1 rounded-lg hover:border-primary"
             icon={<EyeFilled className="text-gray-600 hover:text-primary" />}
             // onClick={() => viewData(record)}
           />
@@ -120,16 +122,7 @@ export default function ListCustomer() {
         <h1>List Customer</h1>
       </div>
       <div className="bg-white p-3 shadow-md rounded-md">
-        <Table
-          columns={columns}
-          dataSource={data}
-          pagination={{
-            defaultPageSize: 5,
-            defaultCurrent: 1,
-            total: 100,
-            position: ["bottomCenter"],
-          }}
-        />
+        <Table columns={columns} dataSource={data} pagination={true} />
       </div>
     </>
   );

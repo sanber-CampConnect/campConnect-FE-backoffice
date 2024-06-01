@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table } from "antd";
+import { Table, Form, Input, Button, Modal } from "antd";
 import { BButton } from "../../components/atoms/index";
 import {
   EyeFilled,
@@ -19,14 +19,7 @@ import tendaUltra from "../../assets/images/tenda-2l-ultralight.png";
 export default function ListProduct() {
   const [section, setSection] = useState("default");
   const [childData, setChildData] = useState({});
-
-  useEffect(() => {
-    if (section === "default") {
-      setChildData({});
-    }
-  }, [section]);
-
-  const data = [
+  const [data, setData] = useState([
     {
       key: "1",
       product_name: "Tenda",
@@ -92,7 +85,15 @@ export default function ListProduct() {
         "Pastikan untuk membersihkan dan merawat tracking pole setelah digunakan.",
       ],
     },
-  ];
+  ]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [form] = Form.useForm();
+
+  useEffect(() => {
+    if (section === "default") {
+      setChildData({});
+    }
+  }, [section]);
 
   const columns = [
     {
@@ -155,6 +156,22 @@ export default function ListProduct() {
     setSection("view");
   };
 
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    form.validateFields().then((values) => {
+      setData([...data, { ...values, key: data.length + 1 }]);
+      form.resetFields();
+      setIsModalVisible(false);
+    });
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
   return (
     <>
       {section === "default" && (
@@ -165,7 +182,7 @@ export default function ListProduct() {
               <BButton
                 type="primary"
                 icon={<PlusOutlined />}
-                // onClick={() => addData()}
+                onClick={showModal}
               >
                 Tambah Data
               </BButton>
@@ -188,6 +205,52 @@ export default function ListProduct() {
           section={section}
         />
       )}
+      <Modal title="Add Product" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+        <Form form={form} layout="vertical">
+          <Form.Item
+            name="product_name"
+            label="Nama Produk"
+            rules={[{ required: true, message: 'Please input the product name!' }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="product_category"
+            label="Kategori Produk"
+            rules={[{ required: true, message: 'Please input the product category!' }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="price"
+            label="Price"
+            rules={[{ required: true, message: 'Please input the price!' }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="stock"
+            label="Stock"
+            rules={[{ required: true, message: 'Please input the stock!' }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="description"
+            label="Deskripsi"
+            rules={[{ required: true, message: 'Please input the description!' }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="how_to_use"
+            label="Tata Cara Penggunaan"
+            rules={[{ required: true, message: 'Please input how to use!' }]}
+          >
+            <Input />
+          </Form.Item>
+        </Form>
+      </Modal>
     </>
   );
 }

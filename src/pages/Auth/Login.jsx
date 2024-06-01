@@ -1,6 +1,7 @@
 import React from "react";
 import heroImg from "../../assets/images/hero-image.svg";
 import logo from "../../assets/icons/main-logo.png";
+import { Link } from "react-router-dom";
 // import { Form, Input, Button } from "antd";
 
 export default function Login() {
@@ -101,7 +102,9 @@ export default function Login() {
             Masuk
           </button>
         </form>
+        <Link to="/auth/forgot-password">
           <p className="cursor-pointer text-primary">Lupa Kata Sandi?</p>
+        </Link>
         </div>
       </div>
     </>

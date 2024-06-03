@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Table, Form, Input, Button, Modal } from "antd";
+import { Table, Form, Input, Button, Modal, Upload } from "antd";
+import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
 import { BButton } from "../../components/atoms/index";
 import {
   EyeFilled,
   EditFilled,
   DeleteFilled,
-  PlusOutlined,
 } from "@ant-design/icons";
 import { numberWithCommas } from "../../utils/Helper";
 import ProductDetail from "./ProductDetail";
@@ -207,6 +207,21 @@ export default function ListProduct() {
       )}
       <Modal title="Add Product" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
         <Form form={form} layout="vertical">
+          <Form.Item
+            name="image"
+            label="Upload Image"
+            valuePropName="fileList"
+            getValueFromEvent={e => Array.isArray(e) ? e : e && e.fileList}
+          >
+            <Upload
+              name="image"
+              listType="picture"
+              maxCount={1}
+              beforeUpload={() => false} // prevent auto upload
+            >
+              <Button icon={<UploadOutlined />}>Upload Image</Button>
+            </Upload>
+          </Form.Item>
           <Form.Item
             name="product_name"
             label="Nama Produk"

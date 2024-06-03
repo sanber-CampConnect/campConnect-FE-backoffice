@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkfe_backoffice=self.webpackChunkfe_backoffice||[]).push([[933],{8933:(e,t,s)=>{s.r(t),s.d(t,{default:()=>n});s(5043);var c=s(4135),i=s(7021),r=s(3216),a=s(579);function n(){const e=(0,r.Zp)();return(0,a.jsx)("div",{className:"h-screen flex justify-center items-center",children:(0,a.jsx)(c.Ay,{status:"404",title:"404",subTitle:"Sorry, the page you visited does not exist.",extra:(0,a.jsx)(i.Ay,{type:"primary",onClick:()=>e("/product"),children:"Back Home"})})})}}}]);
+//# sourceMappingURL=933.b29fdbf3.chunk.js.map

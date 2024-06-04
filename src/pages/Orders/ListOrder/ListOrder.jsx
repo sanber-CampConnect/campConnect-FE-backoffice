@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Tabs, DatePicker } from "antd";
+import { Table, Tabs } from "antd";
 import { BButton, Tags } from "../../../components/atoms/index";
 import { EyeFilled } from "@ant-design/icons";
 import OrderDetails from "./OrderDetail";

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Form, Input, Modal } from "antd";
+import { Table, Form, Input } from "antd";
 import { BButton } from "../../components/atoms/index";
 import {
   EyeFilled,
@@ -13,8 +13,6 @@ import tendaXL from "../../assets/images/tenda-exl-chanodug.png";
 import trackingPole from "../../assets/images/tracking-pole.png";
 import sepatu from "../../assets/images/sepatu-gunung.png";
 import FormSection from "./FormSection";
-
-const { confirm } = Modal;
 
 export default function ListProduct() {
   const [section, setSection] = useState("default");

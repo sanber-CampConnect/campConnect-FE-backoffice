@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { ButtonBack, Images, Tags } from "../../components/atoms/index";
-import { formatRupiah, numberWithCommas } from "../../utils/Helper";
+import { ButtonBack, Images } from "../../components/atoms/index";
+import { numberWithCommas } from "../../utils/Helper";
 
 export default function ProductDetail(props) {
   const { setSection, section, childData } = props;
@@ -15,12 +15,6 @@ export default function ProductDetail(props) {
   return (
     <>
       <div className="content-section">
-        <div className="header">
-          <div className="flex items-center">
-            <ButtonBack onClick={() => setSection("default")} />
-            <div className="header-title">{section === "view" && "Detail"}</div>
-          </div>
-        </div>
         <div className="body pb-16">
           <h2 className="text-primary font-medium mb-3">Data</h2>
           <div className="mb-4">

@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { Table, Form, Input, Button, Modal } from "antd";
+import { Table, Form, Input, Modal } from "antd";
 import { BButton } from "../../components/atoms/index";
 import {
   EyeFilled,
   EditFilled,
   DeleteFilled,
   PlusOutlined,
+  ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import { numberWithCommas } from "../../utils/Helper";
-import ProductDetail from "./ProductDetail";
 import tendaXL from "../../assets/images/tenda-exl-chanodug.png";
-import tenda1L from "../../assets/images/tenda-1l.png";
-import tenda2Lkap3 from "../../assets/images/tenda-2l-kap3.png";
-import tenda2Lkap4 from "../../assets/images/tenda-2l-kap4.png";
-import tenda2Lkap6 from "../../assets/images/tenda-2l-kap6.png";
-import tendaUltra from "../../assets/images/tenda-2l-ultralight.png";
+import trackingPole from "../../assets/images/tracking-pole.png";
+import sepatu from "../../assets/images/sepatu-gunung.png";
+import FormSection from "./FormSection";
+
+const { confirm } = Modal;
 
 export default function ListProduct() {
   const [section, setSection] = useState("default");
@@ -22,26 +22,12 @@ export default function ListProduct() {
   const [data, setData] = useState([
     {
       key: "1",
-      product_name: "Tenda",
+      product_name: "Tenda EXL Chanodug Kap. 12P",
       product_category: "Tenda",
-      price: "100000",
-      product_type: [
-        "Tenda XL",
-        "Tenda 1L",
-        "Tenda 2L Kap. 3-4 org",
-        "Tenda 2L Kap. 4-5 org",
-        "Tenda 2L Kap. 6-7 org",
-        "Tenda Ultraweight",
-      ],
+      price: "90000",
+      product_type: ["Tenda EXL"],
       stock: "10",
-      image: [
-        tendaXL,
-        tenda1L,
-        tenda2Lkap3,
-        tenda2Lkap4,
-        tenda2Lkap6,
-        tendaUltra,
-      ],
+      image: [tendaXL],
       description:
         "Tenda adalah tempat pelindung yang terdiri dari lembaran kain atau bahan lainnya menutupi yang melekat pada kerangka tiang atau menempel pada tali pendukung. Beberapa tenda tidak perlu berdiri di atas tanah karena ada beberapa model tenda yang menggantung di pohon.",
       how_to_use: [
@@ -57,7 +43,9 @@ export default function ListProduct() {
       key: "2",
       product_name: "Sepatu",
       product_category: "Alas Kaki",
+      product_type: ["31", "32", "33"],
       price: "100",
+      image: [sepatu],
       stock: "1",
       description:
         "Sepatu adalah salah satu jenis alas kaki (footwear) yang biasanya terdiri atas bagian-bagian sol, hak, kap, tali, dan lidah.",
@@ -73,7 +61,9 @@ export default function ListProduct() {
       key: "3",
       product_name: "Tracking Pole",
       product_category: "Gunung",
+      product_type: ["10", "11", "12"],
       price: "100000",
+      image: [trackingPole],
       stock: "10",
       description:
         "Alat ini sangat berguna selama hiking atau dijalanan menanjak, dimana beban kaki bisa kita bagi ke tracking pole melalui tumpuan tangan. Sehingga membantu mengurangi resiko cedera otot kaki dan terkilir/keseleo.",
@@ -86,14 +76,35 @@ export default function ListProduct() {
       ],
     },
   ]);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [form] = Form.useForm();
 
   useEffect(() => {
     if (section === "default") {
       setChildData({});
     }
   }, [section]);
+
+  const editData = (record) => {
+    setChildData(record);
+    setSection("edit");
+  };
+
+  const addData = () => {
+    setSection("add");
+  };
+
+  const deleteData = (id) => {
+    confirm({
+      title: "Konfirmasi Hapus",
+      content:
+        "Apakah kamu yakin menghapus data ini? Aksi ini tidak dapat dibatalkan.",
+      icon: <ExclamationCircleOutlined />,
+    });
+  };
+
+  const viewData = (record) => {
+    setChildData(record);
+    setSection("view");
+  };
 
   const columns = [
     {
@@ -136,41 +147,20 @@ export default function ListProduct() {
             <BButton
               className="py-1 rounded-lg hover:border-primary"
               icon={<EditFilled className="text-gray-600 hover:text-primary" />}
-              // onClick={() => editData(record)}
+              onClick={() => editData(record)}
             />
             <BButton
               className="py-1 rounded-lg hover:border-primary"
               icon={
                 <DeleteFilled className="text-gray-600 hover:text-primary" />
               }
-              // onClick={() => deleteData(record)}
+              onClick={() => deleteData(record)}
             />
           </div>
         </>
       ),
     },
   ];
-
-  const viewData = (record) => {
-    setChildData(record);
-    setSection("view");
-  };
-
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
-  const handleOk = () => {
-    form.validateFields().then((values) => {
-      setData([...data, { ...values, key: data.length + 1 }]);
-      form.resetFields();
-      setIsModalVisible(false);
-    });
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
-  };
 
   return (
     <>
@@ -182,7 +172,7 @@ export default function ListProduct() {
               <BButton
                 type="primary"
                 icon={<PlusOutlined />}
-                onClick={showModal}
+                onClick={() => addData()}
               >
                 Tambah Data
               </BButton>
@@ -199,58 +189,12 @@ export default function ListProduct() {
         </div>
       )}
       {section !== "default" && (
-        <ProductDetail
+        <FormSection
           childData={childData}
           setSection={setSection}
           section={section}
         />
       )}
-      <Modal title="Add Product" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
-        <Form form={form} layout="vertical">
-          <Form.Item
-            name="product_name"
-            label="Nama Produk"
-            rules={[{ required: true, message: 'Please input the product name!' }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="product_category"
-            label="Kategori Produk"
-            rules={[{ required: true, message: 'Please input the product category!' }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="price"
-            label="Price"
-            rules={[{ required: true, message: 'Please input the price!' }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="stock"
-            label="Stock"
-            rules={[{ required: true, message: 'Please input the stock!' }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="description"
-            label="Deskripsi"
-            rules={[{ required: true, message: 'Please input the description!' }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            name="how_to_use"
-            label="Tata Cara Penggunaan"
-            rules={[{ required: true, message: 'Please input how to use!' }]}
-          >
-            <Input />
-          </Form.Item>
-        </Form>
-      </Modal>
     </>
   );
 }

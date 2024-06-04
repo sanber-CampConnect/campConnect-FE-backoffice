@@ -83,18 +83,16 @@ export default function SideNavbar() {
                 icon={item.icon}
                 title={item.title}
               >
-                {item.children.map((child) => {
-                  return (
-                    <Menu.Item
-                      key={child.key}
-                      onClick={() =>
-                        handleNavigate(item.path, child.path, child.key)
-                      }
-                    >
-                      {child.title}
-                    </Menu.Item>
-                  );
-                })}
+                {item.children.map((child, childIndex) => (
+                  <Menu.Item
+                    key={`${item.index}-${childIndex}`} // Gunakan kombinasi dari index dan childIndex untuk membuat key yang unik
+                    onClick={() =>
+                      handleNavigate(item.path, child.path, child.key)
+                    }
+                  >
+                    {child.title}
+                  </Menu.Item>
+                ))}
               </SubMenu>
             );
           })}

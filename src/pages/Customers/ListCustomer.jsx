@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Table } from "antd";
 import { Images } from "../../components/atoms/index";
-import { EyeFilled } from "@ant-design/icons";
 import CustomerDetails from "./CustomerDetail";
 
 export default function ListCustomer() {

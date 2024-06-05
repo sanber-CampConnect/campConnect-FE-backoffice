@@ -3,7 +3,7 @@ import { ButtonBack, Images } from "../../components/atoms/index";
 import { numberWithCommas } from "../../utils/Helper";
 
 export default function ProductDetail(props) {
-  const { setSection, section, childData } = props;
+  const { childData } = props;
   const [listImage, setListImage] = useState([]);
 
   useEffect(() => {

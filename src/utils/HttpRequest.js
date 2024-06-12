@@ -21,3 +21,5 @@ export const patch = (url, data, config) => {
 export const delete_request = (url, config) => {
   return axiosInstance.delete(url, config);
 };
+
+export default axiosInstance;

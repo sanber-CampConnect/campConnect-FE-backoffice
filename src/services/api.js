@@ -20,3 +20,82 @@ export const authLogin = async (params) => {
 export const logOut = () => {
   localStorage.removeItem("token");
 };
+
+/* =================================================== Product Management ========================================================== */
+export const getListProducts = async () => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    throw new Error("No token found");
+  }
+  const url = `${REACT_APP_API_URL}/products`;
+  return await get(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const getProductCategories = async () => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    throw new Error("No token found");
+  }
+  const url = `${REACT_APP_API_URL}/categories`;
+  return await get(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const getProductCategoriesById = async (id) => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    throw new Error("No token found");
+  }
+  const url = `${REACT_APP_API_URL}/categories/${id}`;
+  return await get(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const addProductCategories = async (data) => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    throw new Error("No token found");
+  }
+  const url = `${REACT_APP_API_URL}/categories`;
+  return await post(url, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const deleteProductCategories = async (id) => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    throw new Error("No token found");
+  }
+  const url = `${REACT_APP_API_URL}/categories/${id}`;
+  return await delete_request(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const editProductCategories = async (id, data) => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    throw new Error("No token found");
+  }
+  const url = `${REACT_APP_API_URL}/categories/${id}`;
+  return await put(url, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};

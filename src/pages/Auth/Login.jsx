@@ -1,28 +1,51 @@
-import React from "react";
+import React, { useState } from "react";
 import heroImg from "../../assets/images/hero-image.svg";
 import logo from "../../assets/icons/main-logo.png";
 import { Link } from "react-router-dom";
-// import { Form, Input, Button } from "antd";
+import { authLogin } from "../../services/api";
+import { notification, Spin } from "antd";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { getUserData } from "../../redux/auth/action";
 
 export default function Login() {
-  // const onFinish = (values) => {
-  //   console.log("Success:", values);
-  // };
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  // const onFinishFailed = (errorInfo) => {
-  //   console.log("Failed:", errorInfo);
-  // };
+  const onFinish = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    const values = { email, password };
+    console.log("Success:", values);
+    authLogin(values)
+      .then((res) => {
+        if (res.status === 200) {
+          const userData = res.data.data;
+          dispatch(getUserData(userData));
 
-  // const validateMessages = {
-  //   required: "${label} is required!",
-  //   types: {
-  //     email: "${label} is not a valid email!",
-  //     number: "${label} is not a valid number!",
-  //   },
-  //   number: {
-  //     range: "${label} must be between ${min} and ${max}",
-  //   },
-  // };
+          notification.success({
+            message: "Login Berhasil",
+            description: "Kamu berhasil masuk ke dashboard",
+          });
+          navigate("/");
+        }
+      })
+      .catch((err) => {
+        const errorMessage =
+          err.response?.data?.message || "Terjadi kesalahan saat login";
+        notification.error({
+          message: "Login Gagal!",
+          description: errorMessage,
+          placement: "topRight",
+        });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   return (
     <>
@@ -31,80 +54,47 @@ export default function Login() {
         <div className="card shadow-lg bg-white rounded-lg px-5 py-3 w-80">
           <img src={logo} alt="" />
           <h3 className="text-lg font-semibold">Masuk</h3>
-          {/* <Form
-            name="basic"
-            layout="vertical"
-            onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
-            autoComplete="off"
-            validateMessages={validateMessages}
-          >
-            <Form.Item
-              label="Email"
-              name="email"
-              rules={[
-                {
-                  required: true,
-                  type: "email",
-                },
-              ]}
+          <form className="space-y-4" onSubmit={onFinish}>
+            <div>
+              <label htmlFor="email" className="block mb-1">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                className="w-full border border-gray-300 rounded-md px-3 py-2"
+                placeholder="Masukkan email Anda"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="password" className="block mb-1">
+                Kata Sandi
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                className="w-full border border-gray-300 rounded-md px-3 py-2"
+                placeholder="Masukkan kata sandi Anda"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-primary text-white py-2 rounded-md hover:bg-primary-dark transition-colors duration-300"
             >
-              <Input />
-            </Form.Item>
-
-            <Form.Item
-              label="Kata Sandi"
-              name="password"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-            >
-              <Input.Password />
-            </Form.Item>
-
-            <Form.Item>
-              <Button
-                type="primary"
-                htmlType="submit"
-                className="w-full bg-primary"
-              >
-                Masuk
-              </Button>
-            </Form.Item>
-          </Form> */}
-          <form className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block mb-1">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              className="w-full border border-gray-300 rounded-md px-3 py-2"
-              placeholder="Masukkan email Anda"
-            />
-          </div>
-          <div>
-            <label htmlFor="password" className="block mb-1">Kata Sandi</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              className="w-full border border-gray-300 rounded-md px-3 py-2"
-              placeholder="Masukkan kata sandi Anda"
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full bg-primary text-white py-2 rounded-md hover:bg-primary-dark transition-colors duration-300"
-          >
-            Masuk
-          </button>
-        </form>
-        <Link to="/auth/forgot-password">
-          <p className="cursor-pointer text-primary">Lupa Kata Sandi?</p>
-        </Link>
+              {loading ? <Spin /> : "Masuk"}
+            </button>
+          </form>
+          <Link to="/auth/forgot-password">
+            <p className="cursor-pointer text-primary">Lupa Kata Sandi?</p>
+          </Link>
         </div>
       </div>
     </>

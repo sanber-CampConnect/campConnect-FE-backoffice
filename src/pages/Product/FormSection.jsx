@@ -1,8 +1,20 @@
+// FormSection.jsx
 import React, { useEffect, useState } from "react";
-import { Input, Col, Row, Form, Upload, Button, Select } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
-import { BButton, ButtonBack } from "../../components/atoms/index";
+import {
+  Input,
+  Col,
+  Row,
+  Form,
+  Upload,
+  Button,
+  Select,
+  Table,
+  Modal,
+} from "antd";
+import { UploadOutlined, EditFilled, DeleteFilled } from "@ant-design/icons";
+import { BButton, ButtonBack, FieldButton } from "../../components/atoms/index";
 import ProductDetail from "./ProductDetail";
+import VariantModal from "./VariantModal";
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -11,6 +23,40 @@ export default function FormSection(props) {
   const { setSection, section, childData } = props;
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [listVariantProduct, setListVariant] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [variantSection, setVariantSection] = useState("add");
+  const [currentVariant, setCurrentVariant] = useState();
+  const [productVariants, setProductVariants] = useState([]);
+
+  const addVariant = (variant) => {
+    setVariantSection("add");
+    setCurrentVariant(null);
+    setIsModalVisible(true);
+  };
+
+  const addProductVariant = (variant) => {
+    setProductVariants([...productVariants, variant]);
+  };
+
+  const editVariant = (record) => {
+    setVariantSection("edit");
+    setCurrentVariant(record);
+    setIsModalVisible(true);
+  };
+
+  const deleteVariant = (id) => {
+    Modal.confirm({
+      title: "Konfirmasi Penghapusan",
+      content: "Apakah Anda yakin ingin menghapus varian ini?",
+      okText: "Ya",
+      cancelText: "Tidak",
+      onOk: () => {
+        setListVariant((prev) => prev.filter((item) => item.id !== id));
+      },
+    });
+  };
+
   useEffect(() => {
     if (section === "edit" && childData) {
       form.setFieldsValue({
@@ -27,6 +73,42 @@ export default function FormSection(props) {
     }
   }, [section, childData, form]);
 
+  const categories = ["Gunung", "Kemah", "Alat makan"];
+
+  const onFinish = (values) => {
+    const formData = { ...values, productVariants };
+    console.log("Form Data:", formData);
+  };
+
+  const variantColumn = [
+    {
+      title: "Nama Variant",
+      dataIndex: "variant_name",
+    },
+    {
+      title: "Stock",
+      dataIndex: "stock",
+    },
+    {
+      title: "Action",
+      dataIndex: "",
+      render: (text, record) => (
+        <div className="flex items-center gap-x-1">
+          <BButton
+            className="py-1 rounded-lg hover:border-primary"
+            icon={<EditFilled className="text-gray-600 hover:text-primary" />}
+            onClick={() => editVariant(record)}
+          />
+          <BButton
+            className="py-1 rounded-lg hover:border-primary"
+            icon={<DeleteFilled className="text-gray-600 hover:text-primary" />}
+            onClick={() => deleteVariant(record.id)}
+          />
+        </div>
+      ),
+    },
+  ];
+
   return (
     <>
       <div className="content-section">
@@ -42,17 +124,22 @@ export default function FormSection(props) {
         </div>
         {section !== "view" ? (
           <div className="body-with-footer">
-            <Form form={form} layout="vertical">
+            <Form form={form} onFinish={onFinish} layout="vertical">
               <div className="body-content">
+                <div className="text-lg font-semibold text-primary py-2">
+                  Produk
+                </div>
                 <Row gutter={16}>
-                  <Col span={12}>
+                  <Col span={24}>
                     <Form.Item
                       name="image"
                       extra="Ukuran file maksimal 1MB dengan format .jpg, jpeg, png"
                       label="Foto Produk"
                       valuePropName="fileList"
                       getValueFromEvent={(e) =>
-                        Array.isArray(e) ? e : e && e.fileList
+                        Array.isArray(e)
+                          ? e
+                          : e && [e.fileList[e.fileList.length - 1]]
                       }
                       rules={[
                         {
@@ -63,14 +150,20 @@ export default function FormSection(props) {
                       <Upload
                         name="image"
                         listType="picture"
-                        maxCount={3}
+                        maxCount={1}
                         beforeUpload={() => false}
+                        fileList={childData.image || []}
+                        onChange={({ fileList }) =>
+                          form.setFieldsValue({ image: fileList })
+                        }
                       >
                         <Button icon={<UploadOutlined />}>
                           Tambahkan Foto Produk
                         </Button>
                       </Upload>
                     </Form.Item>
+                  </Col>
+                  <Col span={12}>
                     <Form.Item
                       label="Nama Produk"
                       name="product_name"
@@ -111,48 +204,44 @@ export default function FormSection(props) {
                       ]}
                     >
                       <Select placeholder="Pilih Kategori Produk">
-                        {childData.product_category && (
-                          <Option value={childData.product_category}>
-                            {childData.product_category}
+                        {categories.map((category) => (
+                          <Option key={category} value={category}>
+                            {category}
                           </Option>
-                        )}
+                        ))}
                       </Select>
                     </Form.Item>
-                    <Form.Item
-                      label="Jenis Produk"
-                      name="product_type"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Silakan pilih jenis produk",
-                        },
-                      ]}
-                    >
-                      <Select placeholder="Pilih Jenis Produk">
-                        {childData.product_type &&
-                          childData.product_type.map((type) => (
-                            <Option key={type} value={type}>
-                              {type}
-                            </Option>
-                          ))}
-                      </Select>
-                    </Form.Item>
-                    <Form.Item
-                      label="Stok"
-                      name="stock"
-                      rules={[
-                        {
-                          required: true,
-                        },
-                      ]}
-                    >
-                      <Input
-                        addonAfter="pcs"
-                        value="stock"
-                        id="stock"
-                        placeholder="0"
+                  </Col>
+                  <Col span={24}>
+                    <div className="fit-scroll py-2">
+                      <div className="text-lg font-semibold text-primary py-2">
+                        Variant
+                      </div>
+                      {listVariantProduct.length > 0 && (
+                        <Table
+                          dataSource={listVariantProduct.filter(
+                            (x) => x.action !== "Delete"
+                          )}
+                          columns={variantColumn}
+                          pagination={false}
+                          rowKey="id"
+                        />
+                      )}
+                      <FieldButton
+                        title="Tambahkan Variant"
+                        onClick={addVariant}
                       />
-                    </Form.Item>
+                      <VariantModal
+                        section={section}
+                        listVariantProduct={listVariantProduct}
+                        setListVariant={setListVariant}
+                        isModalVisible={isModalVisible}
+                        setIsModalVisible={setIsModalVisible}
+                        currentVariant={currentVariant}
+                        variantSection={variantSection}
+                        setProductVariant={addProductVariant} // Kirim fungsi addProductVariant sebagai prop
+                      />
+                    </div>
                   </Col>
                   <Col span={24}>
                     <Form.Item

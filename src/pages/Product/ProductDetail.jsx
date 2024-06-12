@@ -4,13 +4,6 @@ import { numberWithCommas } from "../../utils/Helper";
 
 export default function ProductDetail(props) {
   const { childData } = props;
-  const [listImage, setListImage] = useState([]);
-
-  useEffect(() => {
-    if (childData.image) {
-      setListImage(childData.image);
-    }
-  }, [childData]);
 
   return (
     <>
@@ -20,10 +13,7 @@ export default function ProductDetail(props) {
           <div className="mb-4">
             <div className="text-secondary mb-2">Foto Produk</div>
             <div className="flex gap-4">
-              {listImage?.map((item, index) => (
-                <Images src={item} key={index} width={70} height={70} />
-              ))}
-              {listImage?.length < 1 && <div>Tidak ada gambar</div>}
+              <Images src={childData.image} width={70} height={70} />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">

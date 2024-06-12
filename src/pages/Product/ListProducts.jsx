@@ -27,7 +27,7 @@ export default function ListProduct() {
       price: "90000",
       product_type: ["Tenda EXL"],
       stock: "10",
-      image: [tendaXL],
+      image: tendaXL,
       description:
         "Tenda adalah tempat pelindung yang terdiri dari lembaran kain atau bahan lainnya menutupi yang melekat pada kerangka tiang atau menempel pada tali pendukung. Beberapa tenda tidak perlu berdiri di atas tanah karena ada beberapa model tenda yang menggantung di pohon.",
       how_to_use: [

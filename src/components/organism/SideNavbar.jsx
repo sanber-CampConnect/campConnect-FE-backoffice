@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Layout, Menu } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import _ from "lodash";
-import { routeList } from "../../routes/RouteList";
+import RouteList from "../../routes/RouteList";
 
 const { SubMenu } = Menu;
 const { Sider } = Layout;
@@ -16,7 +16,7 @@ export default function SideNavbar() {
   const location = useLocation();
 
   useEffect(() => {
-    const dataListMenu = _.filter(routeList, (obj) => {
+    const dataListMenu = _.filter(RouteList(true), (obj) => {
       return obj.path !== "*" && obj.path !== "/auth";
     });
     dataListMenu.forEach((item, index) => {
@@ -29,13 +29,15 @@ export default function SideNavbar() {
     const currentLocation = location.pathname;
     setMenuActive([currentLocation]);
     listMenu.forEach((item) => {
-      item.children.forEach((i) => {
-        if (i.key === currentLocation) {
-          setMenuOpen([item.index.toString()]);
-        }
-      });
+      if (item.children) {
+        item.children.forEach((i) => {
+          if (i.path === currentLocation) {
+            setMenuOpen([item.index.toString()]);
+          }
+        });
+      }
     });
-  }, [listMenu]);
+  }, [location.pathname, listMenu]);
 
   const handleNavigate = (base, child, key) => {
     setMenuActive([key]);
@@ -67,37 +69,38 @@ export default function SideNavbar() {
   };
 
   return (
-    <>
-      <Sider width={280} className="overflow-y-auto">
-        <Menu
-          mode="inline"
-          selectedKeys={menuActive}
-          openKeys={menuOpen}
-          style={{ height: "100%", borderRight: 0 }}
-        >
-          {listMenu.map((item) => {
-            return (
-              <SubMenu
-                onTitleClick={() => handleOpenTab(item.index)}
-                key={item.index}
-                icon={item.icon}
-                title={item.title}
-              >
-                {item.children.map((child, childIndex) => (
-                  <Menu.Item
-                    key={`${item.index}-${childIndex}`} // Gunakan kombinasi dari index dan childIndex untuk membuat key yang unik
-                    onClick={() =>
-                      handleNavigate(item.path, child.path, child.key)
-                    }
-                  >
-                    {child.title}
-                  </Menu.Item>
-                ))}
-              </SubMenu>
-            );
-          })}
-        </Menu>
-      </Sider>
-    </>
+    <Sider width={280} className="overflow-y-auto">
+      <Menu
+        mode="inline"
+        selectedKeys={menuActive}
+        openKeys={menuOpen}
+        style={{ height: "100%", borderRight: 0 }}
+      >
+        {listMenu.map((item) => (
+          <SubMenu
+            onTitleClick={() => handleOpenTab(item.index)}
+            key={item.index}
+            icon={item.icon}
+            title={item.title}
+          >
+            {item.children &&
+              item.children.map((child, childIndex) => (
+                <Menu.Item
+                  key={`${item.path}/${child.path}`}
+                  onClick={() =>
+                    handleNavigate(
+                      item.path,
+                      child.path,
+                      `${item.path}/${child.path}`
+                    )
+                  }
+                >
+                  {child.title}
+                </Menu.Item>
+              ))}
+          </SubMenu>
+        ))}
+      </Menu>
+    </Sider>
   );
 }

@@ -3,6 +3,14 @@ import { SET_USER_DATA } from "./types";
 const initialState = {
   user: {
     token: null,
+    id: null,
+    username: "",
+    email: "",
+    fullname: "",
+    image: "",
+    phone: "",
+    role: "",
+    is_verified: false,
   },
 };
 

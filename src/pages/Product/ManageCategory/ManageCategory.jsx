@@ -116,7 +116,7 @@ export default function ManageCategory() {
               console.log(err);
               notification.error({
                 message: "Gagal!",
-                description: err ? err : "Failed to delete data",
+                description: err ? err : "Gagal menghapus kategori produk",
                 placement: "topRight",
               });
               reject(err);

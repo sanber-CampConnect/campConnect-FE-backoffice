@@ -35,6 +35,60 @@ export const getListProducts = async () => {
   });
 };
 
+export const addProduct = async (data) => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    throw new Error("No token found");
+  }
+  const url = `${REACT_APP_API_URL}/products`;
+  return await post(url, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const deleteProduct = async (id) => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    throw new Error("No token found");
+  }
+  const url = `${REACT_APP_API_URL}/products/${id}`;
+  return await delete_request(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const updateProduct = async (id, data) => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    throw new Error("No token found");
+  }
+  const url = `${REACT_APP_API_URL}/products/${id}`;
+  return await put(url, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const getProductById = async (id) => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    throw new Error("No token found");
+  }
+  const url = `${REACT_APP_API_URL}/products/${id}`;
+  return await get(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+/* ================================================ Product Category Management ===================================================== */
+
 export const getProductCategories = async () => {
   const token = localStorage.getItem("token");
   if (!token) {
@@ -98,4 +152,20 @@ export const editProductCategories = async (id, data) => {
       Authorization: `Bearer ${token}`,
     },
   });
+};
+
+/* =================================================== GET MEDIA IMAGE ========================================================== */
+export const getMediaProduct = async (media) => {
+  const url = `${REACT_APP_API_URL}/assets/${media}`;
+  try {
+    const response = await axios.get(url, {
+      responseType: "blob",
+    });
+    return URL.createObjectURL(response.data);
+  } catch (error) {
+    if (error.response && error.response.status === 404) {
+      return null;
+    }
+    throw error;
+  }
 };

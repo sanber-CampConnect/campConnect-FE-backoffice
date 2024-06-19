@@ -1,4 +1,3 @@
-// FormSection.jsx
 import React, { useEffect, useState } from "react";
 import {
   Input,
@@ -10,24 +9,96 @@ import {
   Select,
   Table,
   Modal,
+  notification,
 } from "antd";
 import { UploadOutlined, EditFilled, DeleteFilled } from "@ant-design/icons";
 import { BButton, ButtonBack, FieldButton } from "../../components/atoms/index";
 import ProductDetail from "./ProductDetail";
 import VariantModal from "./VariantModal";
+import {
+  getProductCategories,
+  addProduct,
+  updateProduct,
+  getMediaProduct,
+  getProductById,
+} from "../../services/api";
 
 const { Option } = Select;
 const { TextArea } = Input;
 
 export default function FormSection(props) {
-  const { setSection, section, childData } = props;
+  const { setSection, section, childData, getData } = props;
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [category, setCategory] = useState([]);
   const [listVariantProduct, setListVariant] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [variantSection, setVariantSection] = useState("add");
   const [currentVariant, setCurrentVariant] = useState();
   const [productVariants, setProductVariants] = useState([]);
+  const [photoProduct, setPhotoProduct] = useState([]);
+  const [uploadedFile, setUploadedFile] = useState(null);
+  const [product, setProduct] = useState({});
+  const [imageChanged, setImageChanged] = useState(false);
+
+  useEffect(() => {
+    fetchCategory();
+    if (childData.id) {
+      fetchProductById();
+    }
+  }, []);
+
+  const fetchCategory = () => {
+    getProductCategories()
+      .then((res) => {
+        setCategory(res.data.data);
+      })
+      .catch((err) => {
+        console.error("Error fetching product category:", err);
+      });
+  };
+
+  const fetchProductById = () => {
+    setLoading(true);
+    getProductById(childData.id)
+      .then((res) => {
+        // console.log(res.data.data);
+        setProduct(res.data.data);
+        setListVariant(res.data.data.variants || []);
+      })
+      .catch((err) => {
+        console.log(err);
+        throw new Error(err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    if (section === "edit") {
+      const fetchImage = async () => {
+        if (childData && childData.image && childData.image.trim() !== "") {
+          try {
+            const imageUrl = await getMediaProduct(childData.image);
+            if (imageUrl) {
+              setPhotoProduct([
+                {
+                  uid: "-1",
+                  name: `product image`,
+                  status: "done",
+                  url: imageUrl,
+                },
+              ]);
+            }
+          } catch (error) {
+            console.error(error);
+          }
+        }
+      };
+      fetchImage();
+    }
+  }, [childData]);
 
   const addVariant = (variant) => {
     setVariantSection("add");
@@ -52,38 +123,119 @@ export default function FormSection(props) {
       okText: "Ya",
       cancelText: "Tidak",
       onOk: () => {
-        setListVariant((prev) => prev.filter((item) => item.id !== id));
+        const updatedListVariant = listVariantProduct.map((item) =>
+          item.id === id ? { ...item, action: "Delete" } : item
+        );
+        setListVariant(updatedListVariant);
+        const updatedProductVariants = productVariants.filter(
+          (variant) => variant.id !== id
+        );
+        setProductVariants(updatedProductVariants);
       },
     });
   };
 
   useEffect(() => {
-    if (section === "edit" && childData) {
+    if (section === "edit" && childData && product) {
       form.setFieldsValue({
-        product_name: childData.product_name,
-        price: childData.price,
-        stock: childData.stock,
-        product_category: childData.product_category,
-        product_type: childData.product_type,
-        description: childData.description,
-        image: childData.image,
+        ...childData,
+        image: photoProduct,
+        variants: childData.variants,
       });
+      setListVariant(product.variants || []);
     } else {
       form.resetFields();
+      setListVariant([]);
     }
-  }, [section, childData, form]);
-
-  const categories = ["Gunung", "Kemah", "Alat makan"];
+  }, [section, childData, form, photoProduct]);
 
   const onFinish = (values) => {
-    const formData = { ...values, productVariants };
-    console.log("Form Data:", formData);
+    if (listVariantProduct.length === 0) {
+      notification.warning({
+        message: "Peringatan",
+        description: "Harap tambahkan setidaknya satu varian produk.",
+      });
+      return;
+    }
+
+    const variants = [...listVariantProduct];
+    const formData = new FormData();
+    formData.append("name", values.name);
+    formData.append("price", parseInt(values.price));
+    formData.append("category_id", values.category_id);
+    formData.append("description", values.description);
+    if (imageChanged && uploadedFile) {
+      formData.append("image", uploadedFile);
+    } else if (!imageChanged && photoProduct.length > 0) {
+      formData.append("image", photoProduct[0].url);
+    }
+    variants.forEach((variant, index) => {
+      formData.append(`variants[${index}][name]`, variant.name);
+      formData.append(`variants[${index}][stock]`, variant.stock);
+    });
+
+    setLoading(true);
+
+    if (section === "add") {
+      addProduct(formData)
+        .then((res) => {
+          if (res) {
+            notification.success({
+              message: "Sukses",
+              description: "Sukses menambahkan produk baru!",
+            });
+            setSection("default");
+            getData();
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          throw new Error(err);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    } else if (section === "edit") {
+      updateProduct(childData.id, formData)
+        .then((res) => {
+          if (res) {
+            notification.success({
+              message: "Sukses",
+              description: "Sukses memperbarui produk!",
+            });
+            setSection("default");
+            getData();
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          notification.error({
+            message: "Gagal",
+            description: "Gagal memperbarui produk!",
+          });
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  };
+
+  const handleUploadChange = ({ fileList }) => {
+    setUploadedFile(fileList[0]?.originFileObj || null);
+    setImageChanged(true);
+  };
+
+  const normFile = (e) => {
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e && e.fileList;
   };
 
   const variantColumn = [
     {
       title: "Nama Variant",
-      dataIndex: "variant_name",
+      dataIndex: "name",
     },
     {
       title: "Stock",
@@ -129,6 +281,9 @@ export default function FormSection(props) {
                 <div className="text-lg font-semibold text-primary py-2">
                   Produk
                 </div>
+                {/* <div className="">
+                  <img src={photoProduct} alt="Photo Produk" />
+                </div> */}
                 <Row gutter={16}>
                   <Col span={24}>
                     <Form.Item
@@ -136,14 +291,12 @@ export default function FormSection(props) {
                       extra="Ukuran file maksimal 1MB dengan format .jpg, jpeg, png"
                       label="Foto Produk"
                       valuePropName="fileList"
-                      getValueFromEvent={(e) =>
-                        Array.isArray(e)
-                          ? e
-                          : e && [e.fileList[e.fileList.length - 1]]
-                      }
+                      getValueFromEvent={normFile}
+                      initialValue={photoProduct}
                       rules={[
                         {
                           required: true,
+                          message: "Harap tambahkan foto produk",
                         },
                       ]}
                     >
@@ -152,10 +305,8 @@ export default function FormSection(props) {
                         listType="picture"
                         maxCount={1}
                         beforeUpload={() => false}
-                        fileList={childData.image || []}
-                        onChange={({ fileList }) =>
-                          form.setFieldsValue({ image: fileList })
-                        }
+                        onChange={handleUploadChange}
+                        fileList={photoProduct}
                       >
                         <Button icon={<UploadOutlined />}>
                           Tambahkan Foto Produk
@@ -166,14 +317,19 @@ export default function FormSection(props) {
                   <Col span={12}>
                     <Form.Item
                       label="Nama Produk"
-                      name="product_name"
+                      name="name"
                       rules={[
                         {
                           required: true,
+                          message: "Silakan masukkan nama produk",
                         },
                       ]}
                     >
-                      <Input placeholder="Ketikan nama produk" />
+                      <Input
+                        value="name"
+                        id="name"
+                        placeholder="Ketikan nama produk"
+                      />
                     </Form.Item>
                     <Form.Item
                       label="Harga"
@@ -181,6 +337,7 @@ export default function FormSection(props) {
                       rules={[
                         {
                           required: true,
+                          message: "Silakan masukkan harga produk",
                         },
                       ]}
                     >
@@ -195,7 +352,7 @@ export default function FormSection(props) {
                   <Col span={12}>
                     <Form.Item
                       label="Kategori Produk"
-                      name="product_category"
+                      name="category_id"
                       rules={[
                         {
                           required: true,
@@ -204,9 +361,9 @@ export default function FormSection(props) {
                       ]}
                     >
                       <Select placeholder="Pilih Kategori Produk">
-                        {categories.map((category) => (
-                          <Option key={category} value={category}>
-                            {category}
+                        {category.map((category) => (
+                          <Option key={category.id} value={category.id}>
+                            {category.name}
                           </Option>
                         ))}
                       </Select>
@@ -237,9 +394,8 @@ export default function FormSection(props) {
                         setListVariant={setListVariant}
                         isModalVisible={isModalVisible}
                         setIsModalVisible={setIsModalVisible}
-                        currentVariant={currentVariant}
-                        variantSection={variantSection}
-                        setProductVariant={addProductVariant} // Kirim fungsi addProductVariant sebagai prop
+                        currentVariant={currentVariant} // Mengirim currentVariant ke VariantModal
+                        setProductVariant={setProductVariants}
                       />
                     </div>
                   </Col>
@@ -250,6 +406,7 @@ export default function FormSection(props) {
                       rules={[
                         {
                           required: true,
+                          message: "Silakan masukkan deskripsi produk",
                         },
                       ]}
                     >
